@@ -55,18 +55,18 @@ public class UserService {
 		}
 	}
 	
-	public ArrayList<String> getFavourites(String email) {
+	public Message getFavourites(String email) {
 		try {
 			
 			Iterator<Document> iterator = mongo.find(new Document(C.MKEY.EMAIL,email)).iterator();
 			if(iterator.hasNext()) {
 				ArrayList<String> arrayList = (ArrayList<String>)iterator.next().get(C.MKEY.FAVOURITE);
-				return arrayList;
+				return new Message(arrayList);
 			} else {
-				return null;
+				return Message.negative();
 			}
 		} catch (Exception e) {
-			return null;
+			return new Message(e.getMessage());
 		}
 	}
 	

@@ -7,6 +7,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -36,14 +37,15 @@ public class RESTService {
 	}
 	
 	@GET
-	@Path("/g/favourites")
+	@Path("/favourites")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<String> getFavourites(@QueryParam("email") String email) {
+	public Message getFavourites(@QueryParam("email") String email) {
+		
 		return service.getFavourites(email);
 	}
 	
 	@POST
-	@Path("/p/favourites")
+	@Path("/favourites")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Message addFavourites(@FormParam("email")String email, @FormParam("item")String item) {
