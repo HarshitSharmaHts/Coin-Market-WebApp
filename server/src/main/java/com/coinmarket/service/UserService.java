@@ -7,6 +7,7 @@ import org.bson.Document;
 
 import com.coinmarket.modal.C;
 import com.coinmarket.response.Message;
+import com.mongodb.client.model.Filters;
 
 public class UserService {
 	
@@ -54,7 +55,7 @@ public class UserService {
 		}
 	}
 	
-	public ArrayList<String> favourites(String email) {
+	public ArrayList<String> getFavourites(String email) {
 		try {
 			
 			Iterator<Document> iterator = mongo.find(new Document(C.MKEY.EMAIL,email)).iterator();
@@ -69,5 +70,18 @@ public class UserService {
 		}
 	}
 	
-	
+	public Message addFavourites(String email, String favourite) {
+		try {
+			Document document = new Document("$push",
+								new Document(C.MKEY.FAVOURITE,favourite));
+			mongo.update(Filters.eq(C.MKEY.EMAIL, email), document);
+			
+			return Message.positive();
+			
+		} catch (Exception e) {
+			
+			return new Message(e.getMessage());
+		
+		}
+	}
 }

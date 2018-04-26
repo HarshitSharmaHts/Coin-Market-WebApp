@@ -1,12 +1,14 @@
 package com.coinmarket.service;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.coinmarket.modal.C;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.UpdateResult;
 
 public class MMongo {
 
@@ -38,5 +40,9 @@ public class MMongo {
 	
 	public void insert(Document e) {
 		mCollection.insertOne(e);
+	}
+	
+	public UpdateResult update(Bson filter, Document update) {
+		return mCollection.updateMany(filter, update);
 	}
 }

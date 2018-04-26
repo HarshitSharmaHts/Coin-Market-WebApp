@@ -1,11 +1,13 @@
 package com.coinmarket.server;
 
 import java.util.ArrayList;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
@@ -18,16 +20,18 @@ public class RESTService {
 	UserService service = new UserService();
 	
 	@POST 
-	@Path("/signup/{name}/{email}/{password}")
+	@Path("/signup")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Message signup(@PathParam("name")String name,@PathParam("email")String email, @PathParam("password")String password) {
+	public Message signup(@FormParam("name")String name,@FormParam("email")String email, @FormParam("password")String password) {
 		return service.signup(name, email, password);
 	}
 	
-	@GET
+	@POST
 	@Path("/login")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Message login (@QueryParam("email")String email, @QueryParam("password") String password) {
+	public Message login (@FormParam("email")String email, @FormParam("password") String password) {
 		return service.login(email, password);
 	}
 	
@@ -35,6 +39,14 @@ public class RESTService {
 	@Path("/g/favourites")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<String> getFavourites(@QueryParam("email") String email) {
-		return service.favourites(email);
+		return service.getFavourites(email);
+	}
+	
+	@POST
+	@Path("/p/favourites")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Message addFavourites(@FormParam("email")String email, @FormParam("item")String item) {
+		return service.addFavourites(email, item);
 	}
 }
