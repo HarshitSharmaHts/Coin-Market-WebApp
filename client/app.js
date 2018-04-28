@@ -134,6 +134,7 @@ app.controller('signupController',function($scope, $location, $http){
       } else if (response.data.status == "false") {
         // user already exist
         $location.path('/signup');
+        alert('User already exist.');
       } else {
         //server error
       }
