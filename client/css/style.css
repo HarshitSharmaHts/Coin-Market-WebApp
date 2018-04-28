@@ -1,5 +1,18 @@
+body{
+    font-family: 'Open Sans', sans-serif;
+}
+
 .cform{
   border-color:#dee2e6;
   border-width:0px 1px 1px 1px;
   border-style:solid;padding:25px;
+}
+
+.losi-div {
+  margin-top: 60px;
+}
+
+.app-body{
+  margin: 0px;
+  padding: 0px;
 }

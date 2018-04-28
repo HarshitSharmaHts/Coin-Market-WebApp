@@ -185,12 +185,14 @@ app.controller('loginController',function ($scope, $location, $http, user){
 });
 
 // dashboardController for dashboard.html
-app.controller('dashboardController',function($scope, $location, $http, user){
+app.controller('dashboardController',function($scope, $location, $http, $interval, user){
   $scope.name = user.getName();
   $scope.email = user.getEmail();
   $scope.id = user.getId();
   $scope.favourites=[];
-
+  $interval(function(){
+    $location.path('/');
+  },300000);
   $http.get('https://api.coinmarketcap.com/v1/ticker/?limit=0').then(function(response){
     $scope.allCoin =  response.data;
   });
