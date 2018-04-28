@@ -1,6 +1,90 @@
 <div>
-  {{name}}<br>
+  <!-- {{name}}<br>
   {{email}}<br>
-  {{id}}<br>
-  <button ng-click="logout()" type="submit" class="btn btn-primary btn-sm mr-4">Logout</button>
+  {{id}}<br> -->
+  <!-- {{favourites}} -->
+  <!-- {{allCoin}} -->
+
+  <nav class="navbar navbar-expand-sm bg-light">
+    <a class="navbar-brand text-dark">Coin Market</a>
+    <ul class="navbar-nav">
+
+    </ul>
+    <ul class="navbar-nav m-auto" style="text-align: center;">
+      <li class="nav-item">
+            Markets: <span class="text-primary">{{global.active_markets}}</span>
+      </li>
+      <li class="nav-item ml-4">
+        Market Cap: <span class="text-primary">${{global.total_market_cap_usd}}</span>
+      </li>
+      <li class="nav-item ml-4">
+        24h Vol: <span class="text-primary">${{global.total_24h_volume_usd}}</span>
+      </li>
+      <li class="nav-item ml-4">
+        BTC Dominance: <span class="text-primary">{{global.bitcoin_percentage_of_market_cap}}%</span>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+          <button ng-click="logout()" type="submit" class="btn btn-primary btn-sm mr-4">Logout</button>
+      </li>
+    </ul>
+  </nav>
+
+
+<div class="m-4">
+  <p>Add you favourite currency:</p>
+  <form class="form-inline col-md-6">
+    <div class="form-group">
+      <select ng-model="favCoin" class="form-control">
+          <option ng-repeat="x in allCoin" value="{{x.id}}">{{x.id}}</option>
+      </select>
+    </div>
+    <button ng-click="addFavourite()" type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+    <div class="table-responsive col-md-12">
+      <table class="table table-striped table-bordered">
+         <thead class="text-center">
+             <tr>
+                 <td class="text-dark font-weight-bold">Name</td>
+                 <td class="text-dark font-weight-bold">Symbol</td>
+                 <td class="text-dark font-weight-bold">Market Cap</td>
+                 <td class="text-dark font-weight-bold">Price</td>
+                 <td class="text-dark font-weight-bold">Circulating Supply</td>
+                 <td class="text-dark font-weight-bold">Volume(24h)</td>
+                 <td class="text-dark font-weight-bold">%1h</td>
+                 <td class="text-dark font-weight-bold">%24h</td>
+                 <td class="text-dark font-weight-bold">%7d</td>
+             </tr>
+         </thead>
+         <tbody class="text-center">
+            <tr ng-repeat="i in favourites">
+                <td>{{i.name}}</td>
+                <td>{{i.symbol}}</td>
+
+                <td ng-if="i.market_cap_usd != null">${{i.market_cap_usd}}</td>
+                <td ng-if="i.market_cap_usd == null" class="text-warning">$?</td>
+
+                <td>${{i.price_usd}}</td>
+
+                <td ng-if="i.total_supply != null">{{i.total_supply}} *</td>
+                <td ng-if="i.total_supply == null" class="text-warning">? *</td>
+
+                <td>${{i["24h_volume_usd"]}}</td>
+
+                <td ng-if="i.percent_change_1h < 0"><span class="text-danger">{{i.percent_change_1h}}</span></td>
+                <td ng-if="i.percent_change_1h >= 0"><span class="text-success">{{i.percent_change_1h}}</span></td>
+
+                <td ng-if="i.percent_change_24h < 0"><span class="text-danger">{{i.percent_change_24h}}</span></td>
+                <td ng-if="i.percent_change_24h >= 0"><span class="text-success">{{i.percent_change_24h}}</span></td>
+
+                <td ng-if="i.percent_change_7d < 0"><span class="text-danger">{{i.percent_change_7d}}</span></td>
+                <td ng-if="i.percent_change_7d >= 0"><span class="text-success">{{i.percent_change_7d}}</span></td>
+
+            </tr>
+         </tbody>
+      </table>
+    </div>
+  </div>
 </div>

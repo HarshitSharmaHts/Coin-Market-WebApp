@@ -6,6 +6,16 @@ app.config(function ($routeProvider){
 
   $routeProvider.when('/',{
 
+    resolve: {
+
+      check: function($location, user){
+        if(!!user.isUserLoggedIn()){
+          $location.path('/dashboard');
+        }
+      },
+
+    },
+
     templateUrl:'./view/login.html',
     controller:'loginController'
 
@@ -46,7 +56,8 @@ app.config(function ($routeProvider){
 
 });
 
-app.service('user', function(){
+// service for user login
+app.service('user', function($http){
   var name;
   var loggedin = false;
   var email;
@@ -95,8 +106,7 @@ app.service('user', function(){
     email = "";
     id = "";
     loggedin = false;
-  }
-
+  };
 });
 
 // signupController controller for signup.html
@@ -179,6 +189,40 @@ app.controller('dashboardController',function($scope, $location, $http, user){
   $scope.name = user.getName();
   $scope.email = user.getEmail();
   $scope.id = user.getId();
+  $scope.favourites=[];
+
+  $http.get('https://api.coinmarketcap.com/v1/ticker/?limit=0').then(function(response){
+    $scope.allCoin =  response.data;
+  });
+
+  $http.get('http://localhost:8080/server/favourites?email='+$scope.email).then(function(response) {
+    var dump = response.data.favourites;
+    for(i = 0; i< dump.length; i++) {
+      $http.get('https://api.coinmarketcap.com/v1/ticker/'+dump[i]+'/').then(function(resp){
+        $scope.favourites.push(resp.data[0]);
+      });
+    }
+  });
+
+  $http.get('https://api.coinmarketcap.com/v1/global/').then(function(response) {
+    $scope.global = response.data;
+  });
+
+  $scope.addFavourite = function() {
+
+    $http({
+      url:'http://localhost:8080/server/favourites',
+      method:'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: 'email='+$scope.email+'&item='+$scope.favCoin
+    }).then(function(response) {
+
+    $location.path('/');
+
+    });
+  };
 
   $scope.logout = function () {
     $location.path('/logout');
