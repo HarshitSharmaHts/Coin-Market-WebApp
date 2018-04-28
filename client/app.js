@@ -2,7 +2,7 @@
 var app =angular.module('main',['ngRoute']);
 
 // module configuration
-app.config(function ($routeProvider,$locationProvider){
+app.config(function ($routeProvider){
 
   $routeProvider.when('/',{
 
@@ -14,13 +14,88 @@ app.config(function ($routeProvider,$locationProvider){
     templateUrl:'./view/signup.html',
     controller:'signupController'
 
+  }).when('/dashboard', {
+
+    resolve: {
+
+      check: function($location, user){
+        if(!user.isUserLoggedIn()){
+          $location.path('/');
+        }
+      },
+
+    },
+
+    templateUrl:'./view/dashboard.html',
+    controller:'dashboardController'
+
+  }).when('/logout', {
+    resolve: {
+      deadResolve:function($location, user){
+        user.clearProfile();
+        $location.path('/');
+      }
+    }
   }).otherwise({
 
     template:'404'
 
   });
 
-  $locationProvider.html5Mode(true);
+  // $locationProvider.html5Mode(true);
+
+});
+
+app.service('user', function(){
+  var name;
+  var loggedin = false;
+  var email;
+  var id;
+
+  this.getName = function () {
+    return name;
+  };
+
+  this.getEmail = function () {
+    return email;
+  };
+
+  this.getId = function () {
+    return id;
+  };
+
+  this.isUserLoggedIn = function () {
+    if(!!localStorage.getItem('login')) {
+      loggedin = true;
+      var profile = JSON.parse(localStorage.getItem('login'));
+      name = profile.name;
+      email = profile.email;
+      id = profile.id;
+    }
+    return loggedin;
+  };
+
+  this.saveProfile = function(profile_){
+    loggedin = true;
+    name = profile_.name;
+    email = profile_.email;
+    id = profile_.id;
+
+    localStorage.setItem('login',JSON.stringify({
+      name: name,
+      id: id,
+      email: email,
+    }));
+
+  };
+
+  this.clearProfile = function () {
+    localStorage.removeItem('login');
+    name = "";
+    email = "";
+    id = "";
+    loggedin = false;
+  }
 
 });
 
@@ -43,7 +118,15 @@ app.controller('signupController',function($scope, $location, $http){
       },
       data: 'name='+name+'&email='+email+'&password='+password
     }).then(function(response) {
-      console.log(response.data);
+      if(response.data.status == "true") {
+        // signup success
+        $location.path('/');
+      } else if (response.data.status == "false") {
+        // user already exist
+        $location.path('/signup');
+      } else {
+        //server error
+      }
     });
   }
   $scope.goToLogin = function() {
@@ -52,7 +135,7 @@ app.controller('signupController',function($scope, $location, $http){
 });
 
 // loginController controller for login.html
-app.controller('loginController',function ($scope, $location, $http){
+app.controller('loginController',function ($scope, $location, $http, user){
 
   $scope.login = function() {
 
@@ -70,11 +153,35 @@ app.controller('loginController',function ($scope, $location, $http){
     		},
     		data: 'email='+email+'&password='+password
     }).then(function(response) {
-        console.log(response.data);
+      if(response.data.status == "true") {
+        var profile =response.data.profile;
+
+        user.saveProfile(profile);
+
+        $location.path('/dashboard');
+      } else if(response.data.status == "false") {
+        // Invalid login
+        $location.path('/');
+        alert('Invalid login');
+      } else {
+        // Server error
+      }
     })
   }
 
   $scope.goToSignup = function () {
     $location.path('/signup');
   }
+});
+
+// dashboardController for dashboard.html
+app.controller('dashboardController',function($scope, $location, $http, user){
+  $scope.name = user.getName();
+  $scope.email = user.getEmail();
+  $scope.id = user.getId();
+
+  $scope.logout = function () {
+    $location.path('/logout');
+  };
+
 });
