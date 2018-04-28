@@ -7,6 +7,21 @@ app.config(function ($routeProvider){
   $routeProvider.when('/',{
 
     resolve: {
+      // check if user is already logged in than user can't login again
+      check: function($location, user){
+        if(!!user.isUserLoggedIn()){
+          $location.path('/dashboard');
+        }
+      },
+
+    },
+    // if user is not login than only login page will be accessible
+    templateUrl:'./view/login.html',
+    controller:'loginController'
+
+  }).when('/signup',{
+
+    resolve: {
 
       check: function($location, user){
         if(!!user.isUserLoggedIn()){
@@ -15,19 +30,13 @@ app.config(function ($routeProvider){
       },
 
     },
-
-    templateUrl:'./view/login.html',
-    controller:'loginController'
-
-  }).when('/signup',{
-
     templateUrl:'./view/signup.html',
     controller:'signupController'
 
   }).when('/dashboard', {
 
     resolve: {
-
+      // check if user is loggedin than only can access to dashboard
       check: function($location, user){
         if(!user.isUserLoggedIn()){
           $location.path('/');
@@ -48,7 +57,8 @@ app.config(function ($routeProvider){
     }
   }).otherwise({
 
-    template:'404'
+        templateUrl:'./view/404.html',
+        controller:'errorPageController'
 
   });
 
@@ -201,9 +211,11 @@ app.controller('dashboardController',function($scope, $location, $http, $interva
   $http.get('http://localhost:8080/server/favourites?email='+$scope.email).then(function(response) {
     var dump = response.data.favourites;
     for(i = 0; i< dump.length; i++) {
+
       $http.get('https://api.coinmarketcap.com/v1/ticker/'+dump[i]+'/').then(function(resp){
         $scope.favourites.push(resp.data[0]);
       });
+
     }
   });
 
@@ -232,3 +244,12 @@ app.controller('dashboardController',function($scope, $location, $http, $interva
   };
 
 });
+
+app.controller('errorPageController', function($scope, $location) {
+  $scope.goBack = function() {
+    $location.path('/');
+  }
+});
+
+
+// END of Script
