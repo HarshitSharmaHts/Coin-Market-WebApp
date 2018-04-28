@@ -14,6 +14,8 @@ public class UserService {
 	MMongo mongo = new MMongo();
 	
 	public Message signup(String name, String email, String password) {
+		if(name.equals("")||email.equals("")||password.equals(""))
+			return Message.error();
 		try {
 			
 			Iterator<Document> iterator = mongo.find(new Document(C.MKEY.EMAIL,email)).iterator();
@@ -35,6 +37,8 @@ public class UserService {
 	}
 	
 	public Message login (String email, String password) {
+		if(email.equals("") || password.equals(""))
+			return Message.error();
 		try {
 		
 			Iterator<Document> iterator = mongo.find(
@@ -72,7 +76,7 @@ public class UserService {
 	
 	public Message addFavourites(String email, String favourite) {
 		try {
-			Document document = new Document("$push",
+			Document document = new Document("$addToSet",
 								new Document(C.MKEY.FAVOURITE,favourite));
 			mongo.update(Filters.eq(C.MKEY.EMAIL, email), document);
 			
